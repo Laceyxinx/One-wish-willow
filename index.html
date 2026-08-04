@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>One Wish Willow™</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Alfa+Slab+One&family=Special+Elite&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --kraft:#c9ad82;--kraft-2:#b9995f;
+    --cream:#f3e8d2;--cream-2:#e9dabb;--holebg:#ece0c6;
+    --ink:#2a2016;--ink-dim:#6d5c45;
+    --maroon:#872a22;--maroon-deep:#6c201a;
+    --line:rgba(42,32,22,.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(120% 100% at 50% -20%, #d8bd93 0%, var(--kraft) 50%, var(--kraft-2) 100%);
+    color:var(--ink);font-family:"Special Elite","Courier New",monospace;
+    min-height:100dvh;display:flex;align-items:center;justify-content:center;
+    padding:24px 18px;overflow:hidden;position:relative;-webkit-font-smoothing:antialiased;
+  }
+  body::after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:60;opacity:.06;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");}
+
+  .stage{width:100%;max-width:560px;position:relative;z-index:1;
+    background:linear-gradient(180deg,var(--cream),var(--cream-2));
+    border:2px solid var(--maroon);
+    box-shadow:0 34px 90px rgba(60,35,15,.45), inset 0 0 0 1px rgba(255,255,255,.25);
+    padding:40px 32px 28px;}
+  .stage::before{content:"";position:absolute;inset:6px;border:1px solid var(--maroon);opacity:.45;pointer-events:none}
+  .stage .spark{position:absolute;color:var(--maroon);font-size:14px;opacity:.5;z-index:2}
+  .spark.tl{top:12px;left:14px}.spark.tr{top:12px;right:14px}.spark.bl{bottom:12px;left:14px}.spark.br{bottom:12px;right:14px}
+
+  .eyebrow{text-align:center;letter-spacing:.26em;text-transform:uppercase;font-size:10px;color:var(--ink-dim)}
+  .eyebrow .dot{color:var(--maroon);margin:0 .5em}
+  h1{font-family:"Anton",sans-serif;color:var(--maroon);text-transform:uppercase;
+    font-size:clamp(38px,10.5vw,62px);line-height:.9;text-align:center;letter-spacing:.01em;margin:8px 0 2px;
+    text-shadow:1.5px 1.5px 0 rgba(108,32,26,.18)}
+  h1 .tm{font-size:.26em;vertical-align:top;color:var(--maroon-deep)}
+  .tagline{text-align:center;color:var(--ink-dim);font-size:14px;margin-top:8px;line-height:1.5}
+  .tagline b{color:var(--maroon)}
+
+  .burst-amaze{position:absolute;top:-12px;right:-10px;z-index:3;background:var(--maroon);color:var(--cream);
+    font-family:"Alfa Slab One",serif;font-size:11px;line-height:1.05;text-align:center;padding:10px 12px;transform:rotate(6deg);
+    clip-path:polygon(50% 0,63% 12%,80% 6%,84% 24%,100% 32%,90% 48%,100% 66%,82% 72%,78% 92%,60% 84%,50% 100%,40% 84%,22% 92%,18% 72%,0 66%,10% 48%,0 32%,16% 24%,20% 6%,37% 12%);
+    box-shadow:0 6px 16px rgba(60,20,10,.4)}
+  .sticker{position:absolute;top:-16px;left:-12px;z-index:3;width:78px;height:78px;background:var(--maroon);color:var(--cream);
+    display:grid;place-content:center;text-align:center;transform:rotate(-9deg);
+    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    box-shadow:0 6px 16px rgba(60,20,10,.4)}
+  .sticker small{font-size:8px;letter-spacing:.08em;display:block}
+  .sticker b{font-family:"Anton",sans-serif;font-size:20px;line-height:1}
+
+  /* ---- top visual: box + willow ---- */
+  .altar{position:relative;height:210px;margin:14px 0 4px;user-select:none;-webkit-user-select:none;touch-action:none;
+    max-height:230px;opacity:1;transition:max-height .55s ease,opacity .45s ease,margin .55s ease}
+  .altar.gone{max-height:0;opacity:0;margin:0;overflow:hidden}
+  .altar svg.willowsvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;display:block}
+
+  #branch{opacity:0;transition:opacity .6s ease,transform .6s ease}
+  .altar[data-stage="out"] #branch{opacity:1}
+  .altar[data-arm="true"] #branch{cursor:grab}
+  .altar[data-arm="true"]:active #branch{cursor:grabbing}
+  #wshadow{opacity:0;transition:opacity .6s ease}
+  .altar[data-stage="out"] #wshadow{opacity:.9}
+  #crack{opacity:0}
+  .sway{animation:sway 6.5s ease-in-out infinite}
+  @keyframes sway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+
+  .halfhint{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-family:"Alfa Slab One",serif;
+    font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--maroon);pointer-events:none;transition:opacity .3s}
+
+  /* the box */
+  .boxwrap{position:absolute;inset:0;display:grid;place-items:center;z-index:4;perspective:900px}
+  .box{width:min(88%,340px);transform-origin:center 80%;
+    transition:transform .85s cubic-bezier(.4,0,.2,1),opacity .7s ease .15s;filter:drop-shadow(0 18px 24px rgba(40,20,8,.45))}
+  .box svg{width:100%;display:block}
+  .box .lid{transform-box:view-box;transform-origin:0px 26px;transition:transform .5s cubic-bezier(.5,0,.3,1)}
+  .boxwrap.open .box{transform:translateY(-120px) rotateX(38deg) scale(.86);opacity:0}
+  .boxwrap.open .box .lid{transform:rotateX(-118deg)}
+  .boxwrap.gone{display:none}
+
+  /* ---- controls ---- */
+  .field{margin-top:8px}
+  label.q{display:block;text-align:center;letter-spacing:.2em;text-transform:uppercase;font-size:12px;color:var(--ink-dim);margin-bottom:8px}
+  input#wish{width:100%;background:transparent;border:none;border-bottom:2px solid var(--line);color:var(--ink);
+    font-family:"Special Elite";font-size:20px;text-align:center;padding:8px 4px 12px;outline:none}
+  input#wish::placeholder{color:rgba(109,92,69,.5)}
+  input#wish:focus{border-bottom-color:var(--maroon)}
+  .btn{display:block;margin:22px auto 4px;background:var(--maroon);color:var(--cream);border:2px solid var(--maroon-deep);
+    font-family:"Anton",sans-serif;letter-spacing:.14em;text-transform:uppercase;font-size:15px;padding:12px 30px;cursor:pointer;transition:.2s;
+    box-shadow:3px 3px 0 rgba(108,32,26,.35)}
+  .btn:hover,.btn:focus-visible{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(108,32,26,.45)}
+  .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(108,32,26,.3)}
+  .fineprint-hint{text-align:center;font-size:11px;color:var(--ink-dim);margin-top:14px;line-height:1.5}
+
+  .screen{display:none;animation:fade .5s ease both}
+  .screen.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .yourwish{text-align:center;font-family:"Special Elite";font-size:19px;color:var(--maroon-deep);margin:2px 0 6px;min-height:26px}
+  .yourwish::before{content:"\201C"}.yourwish::after{content:"\201D"}
+  .instruct{text-align:center;color:var(--ink-dim);font-size:14px}
+  .instruct b{color:var(--maroon);font-family:"Alfa Slab One",serif;font-size:15px}
+
+  .listening{text-align:center;padding:30px 0}
+  .listening p{font-family:"Special Elite";font-size:20px;color:var(--ink-dim)}
+  .dots span{opacity:0;animation:blink 1.4s infinite}
+  .dots span:nth-child(2){animation-delay:.25s}.dots span:nth-child(3){animation-delay:.5s}
+  @keyframes blink{0%,60%,100%{opacity:0}30%{opacity:1}}
+
+  .granted-kicker{text-align:center;font-family:"Alfa Slab One",serif;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--maroon);margin-bottom:6px}
+  .verdict{font-family:"Special Elite";font-size:19px;line-height:1.55;text-align:center;color:var(--ink);margin:8px 6px 4px;min-height:58px}
+  .insert{margin-top:20px;border:1px solid var(--line);background:rgba(255,255,255,.35);padding:16px;font-size:12px;line-height:1.7;color:var(--ink-dim)}
+  .insert h4{font-family:"Alfa Slab One",serif;letter-spacing:.04em;font-size:11px;color:var(--maroon);margin-bottom:8px;text-transform:uppercase}
+  .insert ul{list-style:none}
+  .insert li{padding-left:16px;position:relative;margin:3px 0}
+  .insert li::before{content:"\2020";position:absolute;left:0;color:var(--maroon)}
+
+  .hotline{margin-top:16px;text-align:center}
+  .hotline a{color:var(--ink-dim);border-bottom:1px dotted var(--ink-dim);cursor:pointer;font-size:12px}
+  .hotline a:hover{color:var(--maroon);border-color:var(--maroon)}
+  .transcript{display:none;margin-top:12px;font-style:italic;color:var(--ink-dim);font-family:"Special Elite";font-size:15px;line-height:1.6}
+  .transcript.on{display:block;animation:fade .4s both}
+  .again{display:block;margin:20px auto 0;background:none;border:none;color:rgba(109,92,69,.6);font-family:"Special Elite";font-size:11px;letter-spacing:.04em;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .again:hover{color:var(--maroon)}
+
+  .ember{position:absolute;left:50%;top:48%;width:5px;height:5px;border-radius:1px;background:#151110;pointer-events:none;z-index:5;animation:ember var(--d,1s) ease-out forwards}
+  @keyframes ember{0%{opacity:1;transform:translate(0,0) rotate(0) scale(1)}100%{opacity:0;transform:translate(var(--x,0),var(--y,-60px)) rotate(180deg) scale(.3)}}
+  .shake{animation:shake .5s cubic-bezier(.36,.07,.19,.97) both}
+  @keyframes shake{10%,90%{transform:translate(-1px,0)}20%,80%{transform:translate(2px,0)}30%,50%,70%{transform:translate(-4px,1px)}40%,60%{transform:translate(4px,-1px)}}
+
+  .mute{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:5;background:none;border:none;color:var(--ink-dim);cursor:pointer;font-size:11px;letter-spacing:.1em;opacity:.55;font-family:"Special Elite"}
+  .mute:hover{opacity:1;color:var(--maroon)}
+
+  @media (prefers-reduced-motion:reduce){.sway,body::after,.shake{animation:none}}
+  @media (max-width:420px){.stage{padding:34px 20px 24px}.altar{height:184px}}
+</style>
+</head>
+<body>
+  <main class="stage" id="stage">
+    <span class="spark tl">✦</span><span class="spark tr">✦</span><span class="spark bl">✦</span><span class="spark br">✦</span>
+    <button class="mute" id="mute" aria-label="Toggle sound">♪ SOUND ON</button>
+    <div class="burst-amaze" aria-hidden="true">AMAZE<br>YOUR<br>FRIENDS!</div>
+    <div class="sticker" aria-hidden="true"><small>ONLY</small><b>$6.99</b></div>
+
+    <p class="eyebrow">Tabi Cat Curiosities <span class="dot">✦</span> Novelty Co.</p>
+    <h1>One Wish Willow<span class="tm">™</span></h1>
+    <p class="tagline">You only get <b>one</b> wish. Open the box, make it, snap the willow — there are no take-backs.</p>
+
+    <!-- top visual -->
+    <div class="altar" id="altar" data-stage="box" data-arm="false">
+      <svg class="willowsvg" viewBox="0 0 400 210" aria-label="A gnarled black willow twig">
+        <defs>
+          <linearGradient id="woodV" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#5a4632"/>
+            <stop offset=".32" stop-color="#31241a"/>
+            <stop offset=".62" stop-color="#170f0a"/>
+            <stop offset="1" stop-color="#080504"/>
+          </linearGradient>
+          <linearGradient id="woodDark" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2a1f16"/><stop offset="1" stop-color="#0a0705"/>
+          </linearGradient>
+          <filter id="soft"><feGaussianBlur stdDeviation="5"/></filter>
+        </defs>
+
+        <ellipse id="wshadow" cx="200" cy="168" rx="150" ry="12" fill="#3a2712" filter="url(#soft)"/>
+
+        <g id="branch" class="sway" style="transform-box:view-box;transform-origin:200px 100px">
+          <!-- LEFT HALF -->
+          <g id="left" style="transform-box:view-box;transform-origin:200px 100px">
+            <!-- frayed prongs -->
+            <path fill="url(#woodDark)" d="M46,90 L14,82 L40,94 L12,92 L38,99 L14,104 L40,103 L12,114 L42,108 Z"/>
+            <!-- knotty body -->
+            <path fill="url(#woodV)" d="M200,82
+              C182,77 176,88 158,84 C140,80 134,92 114,88 C97,85 92,95 72,90
+              C60,87 52,95 44,92 L44,109 C54,107 60,116 74,111
+              C93,106 98,116 116,113 C136,109 140,120 158,116 C178,112 182,122 200,118 Z"/>
+            <!-- grain -->
+            <path d="M56,96 C90,90 130,94 196,92" fill="none" stroke="#0c0806" stroke-width="1.4" opacity=".45"/>
+            <path d="M60,106 C96,110 140,106 196,108" fill="none" stroke="#0c0806" stroke-width="1.2" opacity=".35"/>
+            <!-- top highlight -->
+            <path d="M58,88 C92,83 132,87 196,86" fill="none" stroke="#a58a63" stroke-width="1.6" opacity=".4" stroke-linecap="round"/>
+            <!-- holes with depth -->
+            <g>
+              <ellipse cx="76" cy="100" rx="15" ry="6.2" fill="var(--holebg)" transform="rotate(-15 76 100)"/>
+              <path d="M63,97 a15 6.2 -15 0 1 26 0" fill="none" stroke="#0a0705" stroke-width="2.4" opacity=".6"/>
+              <path d="M64,103 a15 6.2 -15 0 0 24 0" fill="none" stroke="#9a825f" stroke-width="1.2" opacity=".35"/>
+            </g>
+            <g>
+              <ellipse cx="118" cy="101" rx="15" ry="6.2" fill="var(--holebg)" transform="rotate(15 118 101)"/>
+              <path d="M105,98 a15 6.2 15 0 1 26 0" fill="none" stroke="#0a0705" stroke-width="2.4" opacity=".6"/>
+              <path d="M106,104 a15 6.2 15 0 0 24 0" fill="none" stroke="#9a825f" stroke-width="1.2" opacity=".35"/>
+            </g>
+            <g>
+              <ellipse cx="160" cy="100" rx="15" ry="6.2" fill="var(--holebg)" transform="rotate(-15 160 100)"/>
+              <path d="M147,97 a15 6.2 -15 0 1 26 0" fill="none" stroke="#0a0705" stroke-width="2.4" opacity=".6"/>
+              <path d="M148,103 a15 6.2 -15 0 0 24 0" fill="none" stroke="#9a825f" stroke-width="1.2" opacity=".35"/>
+            </g>
+          </g>
+
+          <!-- RIGHT HALF -->
+          <g id="right" style="transform-box:view-box;transform-origin:200px 100px">
+            <path fill="url(#woodDark)" d="M354,90 L386,82 L360,94 L388,92 L362,99 L386,104 L360,103 L388,114 L358,108 Z"/>
+            <path fill="url(#woodV)" d="M200,82
+              C218,77 224,88 242,84 C260,80 266,92 286,88 C303,85 308,95 328,90
+              C340,87 348,95 356,92 L356,109 C346,107 340,116 326,111
+              C307,106 302,116 284,113 C264,109 260,120 242,116 C222,112 218,122 200,118 Z"/>
+            <path d="M344,96 C310,90 270,94 204,92" fill="none" stroke="#0c0806" stroke-width="1.4" opacity=".45"/>
+            <path d="M340,106 C304,110 260,106 204,108" fill="none" stroke="#0c0806" stroke-width="1.2" opacity=".35"/>
+            <path d="M342,88 C308,83 268,87 204,86" fill="none" stroke="#a58a63" stroke-width="1.6" opacity=".4" stroke-linecap="round"/>
+            <g>
+              <ellipse cx="240" cy="100" rx="15" ry="6.2" fill="var(--holebg)" transform="rotate(15 240 100)"/>
+              <path d="M227,97 a15 6.2 15 0 1 26 0" fill="none" stroke="#0a0705" stroke-width="2.4" opacity=".6"/>
+              <path d="M228,103 a15 6.2 15 0 0 24 0" fill="none" stroke="#9a825f" stroke-width="1.2" opacity=".35"/>
+            </g>
+            <g>
+              <ellipse cx="282" cy="101" rx="15" ry="6.2" fill="var(--holebg)" transform="rotate(-15 282 101)"/>
+              <path d="M269,98 a15 6.2 -15 0 1 26 0" fill="none" stroke="#0a0705" stroke-width="2.4" opacity=".6"/>
+              <path d="M270,104 a15 6.2 -15 0 0 24 0" fill="none" stroke="#9a825f" stroke-width="1.2" opacity=".35"/>
+            </g>
+            <g>
+              <ellipse cx="324" cy="100" rx="15" ry="6.2" fill="var(--holebg)" transform="rotate(15 324 100)"/>
+              <path d="M311,97 a15 6.2 15 0 1 26 0" fill="none" stroke="#0a0705" stroke-width="2.4" opacity=".6"/>
+              <path d="M312,103 a15 6.2 15 0 0 24 0" fill="none" stroke="#9a825f" stroke-width="1.2" opacity=".35"/>
+            </g>
+          </g>
+
+          <path id="crack" d="M200 82 l-5 8 l7 6 l-6 8 l5 6" fill="none" stroke="#f3e8d2" stroke-width="3" stroke-linecap="round" style="transform-box:view-box;transform-origin:200px 100px"/>
+        </g>
+      </svg>
+
+      <!-- THE BOX (covers willow until opened) -->
+      <div class="boxwrap" id="boxwrap">
+        <div class="box" id="box">
+          <svg viewBox="0 0 320 120" aria-label="One Wish Willow box">
+            <rect x="2" y="2" width="316" height="116" rx="7" fill="#d9c09a" stroke="#b89a68" stroke-width="2"/>
+            <!-- red swooshes -->
+            <path fill="var(--maroon)" d="M2,2 L92,2 C70,34 118,52 74,86 C58,100 40,104 2,110 Z"/>
+            <path fill="var(--maroon)" d="M318,10 C250,20 250,50 318,44 L318,10 Z"/>
+            <path fill="var(--maroon)" d="M2,118 C70,112 120,116 190,110 C130,120 70,120 2,120 Z" opacity=".9"/>
+            <!-- lid (opens) -->
+            <g class="lid">
+              <rect x="2" y="2" width="316" height="26" rx="7" fill="#cbb082" stroke="#b89a68" stroke-width="1.5"/>
+              <path fill="var(--maroon)" d="M2,2 L92,2 C82,16 96,22 74,28 L2,28 Z"/>
+            </g>
+            <!-- title -->
+            <text x="176" y="60" text-anchor="middle" font-family="Anton" font-size="30" fill="#f3e8d2"
+                  textLength="250" lengthAdjust="spacingAndGlyphs" letter-spacing="1">ONE WISH WILLOW</text>
+            <text x="112" y="82" text-anchor="middle" font-family="Alfa Slab One" font-size="11" fill="var(--maroon)" transform="rotate(-6 112 82)">CRACK!</text>
+            <text x="272" y="72" text-anchor="middle" font-family="Alfa Slab One" font-size="8" fill="#f3e8d2">AMAZE YOUR</text>
+            <text x="272" y="82" text-anchor="middle" font-family="Alfa Slab One" font-size="8" fill="#f3e8d2">FRIENDS!</text>
+            <text x="200" y="104" text-anchor="middle" font-family="Special Elite" font-size="9" fill="var(--maroon)">★ You only get ONE WISH ★</text>
+            <text x="150" y="98" font-family="Special Elite" font-size="10" fill="var(--maroon)" opacity=".8">✦ ✦ ✦ ✦</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="halfhint" id="halfhint"></div>
+    </div>
+
+    <!-- SCREEN 0: box -->
+    <section class="screen on" id="s-box">
+      <p class="instruct">Your One Wish Willow has arrived. <b>Open it.</b></p>
+      <button class="btn" id="open">Open the box</button>
+      <p class="fineprint-hint">Limit three per household. We advise against all three.</p>
+    </section>
+
+    <!-- SCREEN 1: wish -->
+    <section class="screen" id="s-offer">
+      <div class="field">
+        <label class="q" for="wish">State your one wish</label>
+        <input id="wish" type="text" maxlength="120" placeholder="I wish…" autocomplete="off" />
+      </div>
+      <button class="btn" id="take">Take the willow</button>
+      <p class="fineprint-hint">One wish per person, per lifetime. All sales — and all wishes — are final.</p>
+    </section>
+
+    <!-- SCREEN 2: snap -->
+    <section class="screen" id="s-snap">
+      <p class="yourwish" id="echo"></p>
+      <p class="instruct">Hold the willow until it breaks. <b>CRACK!</b></p>
+    </section>
+
+    <!-- SCREEN 3: granting -->
+    <section class="screen" id="s-granting">
+      <div class="listening"><p>The willow is listening<span class="dots"><span>.</span><span>.</span><span>.</span></span></p></div>
+    </section>
+
+    <!-- SCREEN 4: twist -->
+    <section class="screen" id="s-twist">
+      <p class="granted-kicker">✦ Your wish is granted ✦</p>
+      <p class="verdict" id="verdict"></p>
+      <div class="insert">
+        <h4>Product insert — read after use</h4>
+        <ul>
+          <li>Single use only. Your willow is now spent.</li>
+          <li>Wishes are final. They cannot be reversed, amended, or clarified.</li>
+          <li>Not valid for resurrection, immortality, time, or additional willows.</li>
+          <li>Tabi Cat Curiosities is not liable for interpretation, outcome, or regret.</li>
+        </ul>
+      </div>
+      <div class="hotline">
+        <a id="callBtn">Unhappy with your wish? Call the Wish Assurance Line.</a>
+        <p class="transcript" id="transcript">“…Thank you for calling. All wishes are final. There is no one here who can help you. Please do not call again.” <em>[the line goes dead]</em></p>
+      </div>
+      <button class="again" id="again">request another willow (against our recommendation)</button>
+    </section>
+  </main>
+
+<script>
+(() => {
+  "use strict";
+  const $ = s => document.querySelector(s);
+  const stage=$("#stage"), altar=$("#altar"), branch=$("#branch"),
+        left=$("#left"), right=$("#right"), crack=$("#crack"),
+        halfhint=$("#halfhint"), wishInput=$("#wish"),
+        echo=$("#echo"), verdict=$("#verdict"),
+        boxwrap=$("#boxwrap");
+  const screens={box:$("#s-box"),offer:$("#s-offer"),snap:$("#s-snap"),granting:$("#s-granting"),twist:$("#s-twist")};
+  const prefersReduced = matchMedia("(prefers-reduced-motion:reduce)").matches;
+  let wishText="", muted=false, snapped=false, opened=false;
+  const show = name => { for(const k in screens) screens[k].classList.toggle("on", k===name); };
+
+  /* ---------- audio ---------- */
+  let ac=null;
+  const ctx = () => (ac ||= new (window.AudioContext||window.webkitAudioContext)());
+  let creakOsc=null, creakGain=null;
+  function startCreak(){ if(muted) return;
+    try{ const c=ctx(); creakOsc=c.createOscillator(); creakGain=c.createGain();
+      const lp=c.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=380;
+      creakOsc.type="sawtooth"; creakOsc.frequency.value=48; creakGain.gain.value=0.0001;
+      creakOsc.connect(lp).connect(creakGain).connect(c.destination); creakOsc.start(); }catch(e){}}
+  function setCreak(p){ if(!creakOsc||muted) return; const c=ctx();
+    creakOsc.frequency.setTargetAtTime(48+p*150,c.currentTime,.05);
+    creakGain.gain.setTargetAtTime(0.02+p*0.06,c.currentTime,.05);}
+  function stopCreak(){ if(!creakOsc) return;
+    try{ const c=ctx(); creakGain.gain.setTargetAtTime(0.0001,c.currentTime,.05); creakOsc.stop(c.currentTime+.15);}catch(e){}
+    creakOsc=null;}
+  function noiseBurst(freq,q,dur,vol){ if(muted) return;
+    try{ const c=ctx(), now=c.currentTime;
+      const buf=c.createBuffer(1,c.sampleRate*dur,c.sampleRate), d=buf.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+      const src=c.createBufferSource(); src.buffer=buf;
+      const bp=c.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=freq; bp.Q.value=q;
+      const g=c.createGain(); g.gain.setValueAtTime(vol,now); g.gain.exponentialRampToValueAtTime(.001,now+dur);
+      src.connect(bp).connect(g).connect(c.destination); src.start(now);
+    }catch(e){}}
+  function crackSound(){ noiseBurst(1800,.7,.25,.9);
+    if(muted) return;
+    try{ const c=ctx(), now=c.currentTime; const clk=c.createOscillator(), cg=c.createGain();
+      clk.type="square"; clk.frequency.value=120; cg.gain.setValueAtTime(.5,now); cg.gain.exponentialRampToValueAtTime(.001,now+.08);
+      clk.connect(cg).connect(c.destination); clk.start(now); clk.stop(now+.08);}catch(e){}}
+  function boxSound(){ noiseBurst(600,.5,.3,.4); }
+
+  /* ---------- open the box ---------- */
+  function openBox(){
+    if(opened) return; opened=true;
+    if(ac && ac.state==="suspended") ac.resume();
+    boxSound();
+    boxwrap.classList.add("open");
+    altar.dataset.stage="out";           // reveal willow
+    setTimeout(()=>{ boxwrap.classList.add("gone"); }, 900);
+    setTimeout(()=>{ show("offer"); wishInput.focus(); }, 850);
+  }
+
+  /* ---------- bending + snap ---------- */
+  let holding=false, progress=0, raf=null, lastT=0; const HOLD_MS=1400;
+  const arm = on => { altar.dataset.arm=String(on); };
+  function bend(p){
+    left.style.transform  = `rotate(${-5*p}deg) translateY(${3*p}px)`;
+    right.style.transform = `rotate(${ 5*p}deg) translateY(${3*p}px)`;
+    crack.style.opacity=p; crack.style.transform=`scaleY(${.4+p*1.1})`;
+  }
+  function loop(t){ if(!lastT) lastT=t; const dt=t-lastT; lastT=t;
+    if(holding){ progress=Math.min(1,progress+dt/HOLD_MS); bend(progress); setCreak(progress);
+      halfhint.textContent = progress>.55 ? "it wants to break" : "hold to snap";
+      halfhint.style.opacity=1-progress*.6;
+      if(progress>=1){ doSnap(); return; }
+    }else{ progress=Math.max(0,progress-dt/500); bend(progress); setCreak(progress);
+      if(progress<=0){ cancelAnimationFrame(raf); raf=null; lastT=0; stopCreak(); return; } }
+    raf=requestAnimationFrame(loop);
+  }
+  function beginHold(e){ if(snapped||altar.dataset.arm!=="true") return; e.preventDefault();
+    if(ac && ac.state==="suspended") ac.resume(); holding=true; startCreak();
+    if(!raf){ lastT=0; raf=requestAnimationFrame(loop);} }
+  function endHold(){ if(!holding) return; holding=false;
+    if(progress>.15 && !snapped){ halfhint.textContent="the willow felt you let go"; halfhint.style.opacity=1;
+      setTimeout(()=>{ if(!snapped){halfhint.textContent="hold to snap";halfhint.style.opacity=1;} },1400);} }
+  function embers(){ if(prefersReduced) return;
+    for(let i=0;i<26;i++){ const s=document.createElement("span"); s.className="ember";
+      const ang=Math.random()*Math.PI-Math.PI, spd=30+Math.random()*90;
+      s.style.setProperty("--x",Math.cos(ang)*spd+"px"); s.style.setProperty("--y",(-30-Math.random()*80)+"px");
+      s.style.setProperty("--d",(.7+Math.random()*.9)+"s"); s.style.left=(48+Math.random()*4)+"%";
+      if(Math.random()<.35) s.style.background="var(--maroon)";
+      altar.appendChild(s); setTimeout(()=>s.remove(),1700);} }
+
+  async function doSnap(){
+    if(snapped) return; snapped=true; holding=false;
+    cancelAnimationFrame(raf); raf=null; arm(false);
+    stopCreak(); crackSound();
+    if(!prefersReduced) stage.classList.add("shake");
+    setTimeout(()=>stage.classList.remove("shake"),500);
+    branch.classList.remove("sway");
+    left.style.transition="transform .7s cubic-bezier(.3,1,.4,1)";
+    right.style.transition="transform .7s cubic-bezier(.3,1,.4,1)";
+    left.style.transform ="rotate(-64deg) translate(-30px,26px)";
+    right.style.transform="rotate(64deg) translate(30px,26px)";
+    crack.style.opacity=0; halfhint.textContent=""; embers();
+    // clear the willow away so it never overlaps the granted text
+    setTimeout(()=>{
+      branch.style.transition="opacity .5s ease, transform .5s ease";
+      branch.style.transform="translateY(-46px)"; branch.style.opacity="0";
+      altar.classList.add("gone");
+      show("granting"); grantWish();
+    }, 1000);
+  }
+
+  altar.addEventListener("pointerdown", beginHold);
+  window.addEventListener("pointerup", endHold);
+  altar.addEventListener("pointerleave", endHold);
+  altar.addEventListener("pointercancel", endHold);
+  altar.tabIndex=0;
+  altar.addEventListener("keydown", e=>{ if(e.key===" "||e.key==="Enter"){ e.preventDefault(); if(!holding) beginHold(e);} });
+  altar.addEventListener("keyup", e=>{ if(e.key===" "||e.key==="Enter") endHold(); });
+
+  /* ---------- twist ---------- */
+  const FALLBACKS=[
+    "It is done. You received exactly what you asked for — and every quiet thing you never meant to trade for it.",
+    "Granted. The wish arrives tonight, wearing the face of the one person you hoped it wouldn't.",
+    "So it is. What you wanted is yours now, permanently, and you will spend a long time learning what 'permanently' means.",
+    "The willow obliges. Your wish comes true at once — for everyone but you.",
+    "Consider it granted. It will feel like a gift for exactly as long as you don't look too closely.",
+    "Done. You asked once; the willow will answer for the rest of your life."
+  ];
+  const pickFallback = () => FALLBACKS[Math.floor(Math.random()*FALLBACKS.length)];
+  const SYS="You are the One Wish Willow: an ancient, cursed wish-granting object, like a monkey's paw. The user has just snapped you in half and made a wish. Grant their wish — but twist it into a darkly ironic, sinister outcome they didn't anticipate. Speak directly to the user in second person, deadpan and eerie, like a formal but ominous notice. Keep it to 2–3 sentences, PG-13: unsettling and blackly funny, never graphic gore, no self-harm, nothing sexual, and never name or target real living people. Return ONLY the granted-outcome text, no preamble, no quotation marks.";
+
+  async function grantWish(){
+    let text="";
+    // 1) our own backend — this is what runs on the deployed (Vercel) site
+    try{
+      const res=await fetch("/api/wish",{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({ wish: wishText })
+      });
+      if(res.ok){ const d=await res.json(); text=(d.text||"").trim(); }
+    }catch(e){}
+    // 2) direct call — this path lights up inside the Claude.ai preview
+    if(!text){
+      try{
+        const res=await fetch("https://api.anthropic.com/v1/messages",{
+          method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({ model:"claude-sonnet-4-6",max_tokens:1000,
+            system:SYS, messages:[{role:"user",content:"My wish: "+wishText}] })
+        });
+        const d=await res.json();
+        text=(d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join(" ").trim();
+      }catch(e){}
+    }
+    // 3) still nothing? use a hand-written twist so it never breaks
+    text=text.replace(/^["“”]+|["“”]+$/g,"").trim();
+    if(!text) text=pickFallback();
+    setTimeout(()=>{ verdict.textContent=text; show("twist"); }, 600);
+  }
+
+  /* ---------- flow ---------- */
+  $("#open").addEventListener("click", openBox);
+  boxwrap.addEventListener("click", openBox);
+  $("#take").addEventListener("click", ()=>{
+    const v=wishInput.value.trim();
+    if(!v){ wishInput.focus(); wishInput.placeholder="…the willow needs a wish"; return; }
+    wishText=v; echo.textContent=v; show("snap"); arm(true);
+    halfhint.textContent="hold to snap"; halfhint.style.opacity=1;
+    altar.focus({preventScroll:true});
+  });
+  wishInput.addEventListener("keydown", e=>{ if(e.key==="Enter") $("#take").click(); });
+  $("#callBtn").addEventListener("click", ()=> $("#transcript").classList.toggle("on"));
+  $("#again").addEventListener("click", ()=>{
+    snapped=false; opened=false; progress=0; wishText=""; wishInput.value="";
+    left.style.transition="transform .5s ease"; right.style.transition="transform .5s ease";
+    left.style.transform=""; right.style.transform="";
+    branch.style.transition=""; branch.style.transform=""; branch.style.opacity="";
+    crack.style.opacity=0; branch.classList.add("sway");
+    altar.classList.remove("gone"); altar.dataset.stage="box"; arm(false);
+    boxwrap.classList.remove("open","gone");
+    $("#transcript").classList.remove("on"); halfhint.textContent="";
+    show("box");
+  });
+  $("#mute").addEventListener("click", e=>{ muted=!muted; e.target.textContent = muted ? "♪ SOUND OFF" : "♪ SOUND ON"; if(muted) stopCreak(); });
+})();
+</script>
+</body>
+</html>
