@@ -39,7 +39,7 @@ I integrated DeepSeek `deepseek-v4-flash` and designed the prompt behavior to fi
 
 #### 4. Used playtest feedback to iterate the prompt
 
-The first production prompt did not constrain the narrative logic tightly enough. Some friends tried the product once, felt the generated outcome did not match the One Wish Willow premise, and did not continue. I treated this as a product-quality issue rather than only a model issue: I revised the prompt in GitHub to strengthen literal fulfillment, causal consequences, language selection, concise output, and representative examples. After output relevance improved, the rate of API-request growth visibly increased.
+The first production prompt was written primarily in English for the initial overseas deployment. Chinese playtesters encountered unnatural phrasing, overly long outcomes, incorrect language choices for mixed-language wishes, and consequences that were too dark for casual friend-to-friend prompts. Some tried the product once and did not continue. I treated this as a localization and product-quality issue rather than only a model issue: I added Chinese-specific rules for semantic language selection, an approximately 100-character limit, literal fulfillment before consequences, and lighter handling for casual entertainment scenarios. After output relevance improved, the rate of API-request growth visibly increased.
 
 #### 5. Added multilingual and contextual behavior
 
