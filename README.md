@@ -1,94 +1,110 @@
-# One Wish Willow
+# One Wish Willow｜一愿柳
 
+> 愿望一定会实现，但结果未必如你所愿。  
 > Your wish will come true. The outcome may not be what you meant.
+
+[中文](#中文介绍) · [English](#english) · [在线体验](https://one-wish-willow-lyart.vercel.app/) · [产品需求文档](./docs/PRD.md) · [产品案例](./docs/PRODUCT_CASE_STUDY.md) · [迭代路线](./docs/ROADMAP.md)
+
+## 中文介绍
+
+One Wish Willow 是一款受恐怖电影《痴迷》（*Obsession*）核心道具“一愿柳”启发的非官方 AI 互动许愿网站。
+
+影片中，Bear 折断一愿柳，许愿 Nikki 爱自己胜过任何人。愿望确实实现，但 Nikki 的爱逐渐演变为失控的病态痴迷，并引发一系列悲剧。本项目将这套设定转化为可参与的数字体验：用户亲自许下愿望、折断柳枝，并看到愿望如何以意料之外的方式成真。
+
+### 产品定位
+
+普通 AI 产品通常是“输入问题—获得答案”。一愿柳将一次文本生成重构为具有情绪铺垫的互动仪式：
+
+1. 打开一愿柳包装盒；
+2. 输入唯一的愿望；
+3. 长按柳枝直至折断；
+4. 等待一愿柳解读愿望；
+5. 获得“愿望成真 + 意外代价”的结果。
+
+产品不是随机制造灾难，也不是故意拒绝愿望。AI 必须先实现用户的愿望，再从愿望中未被限定的边界、规模或实现方式里推导后果，让用户产生“它确实实现了，但这不是我真正想要的”这一瞬间。
+
+### 产品亮点
+
+- **热点产品化：** 将《痴迷》爆火后观众对一愿柳的关注转化为可体验产品。
+- **仪式化交互：** 通过开盒、输入、长按折断、等待和揭晓建立完整情绪曲线。
+- **AI 生成策略：** 接入 DeepSeek `deepseek-v4-flash`，按照“先兑现、再揭示代价”的规则生成结果。
+- **中英文适配：** 根据愿望的主要语言输出结果，主要语义为中文的混合输入优先使用中文。
+- **异常降级：** 模型不可用或返回为空时展示策划兜底结果，保证折断后一定出现结局。
+- **安全架构：** 模型密钥仅保存在服务端环境变量中，不暴露给浏览器。
+- **无障碍体验：** 支持触屏、鼠标和键盘操作，并适配移动端及减少动态效果偏好。
+- **双区域部署：** `main` 分支部署至 Vercel；`腾讯云` 分支服务中国大陆访问场景。
+
+### AI 解释逻辑
+
+```text
+识别用户真正想获得的结果
+            ↓
+找到未说明的边界或隐藏假设
+            ↓
+明确让愿望实现
+            ↓
+推导与愿望直接相关的意外代价
+```
+
+Bear 的愿望是产品判断基准：Nikki 的确爱他胜过任何人，但 Bear 没有限定这份爱的健康程度和边界。结果不是随机惩罚，而是愿望本身被推向极端后的直接后果。
+
+### 技术架构
+
+```text
+单页互动前端
+      ↓
+POST /api/wish
+      ↓
+Serverless Function
+      ↓
+DeepSeek deepseek-v4-flash
+      ↓
+愿望实现及其意外后果
+      └── 接口异常 → 本地策划兜底结果
+```
+
+### 上线验证与 Prompt 迭代
+
+截至统计截图，产品累计产生 **326 次 API 请求、处理 262,855 Tokens**。这组数据代表模型调用量，不等同于独立用户数或转化率。
+
+首版上线后，部分朋友试玩反馈生成结果与一愿柳设定不够贴合，体验一次后没有继续使用。我据此将问题定位到 Prompt 对“愿望必须实现”和“后果必须来自原始措辞”的约束不足，并在 GitHub 中补强生成逻辑、语言规则与示例。输出相关性改善后，观察到 API 请求增长速度明显加快；由于尚未保留完整的分日数据，暂不宣称具体增长比例。
+
+下一阶段重点验证：
+
+- 首屏 → 开盒 → 提交 → 折断 → 结果的分步完成率；
+- AI 成功率、降级率与 p50/p95 响应时间；
+- 愿望实现度、因果相关性与语言匹配评分；
+- 重玩、分享意愿及双区域访问表现。
+
+### 部署策略
+
+| 用户区域 | 分支 | 平台 | 用途 |
+|---|---|---|---|
+| 全球 | `main` | Vercel | 主生产环境与 Serverless API |
+| 中国大陆 | `腾讯云` | 腾讯云 | 国内访问与区域部署适配 |
+
+## English
 
 One Wish Willow is an unofficial, fan-made AI wish experience inspired by the mysterious prop in Curry Barker’s horror film *Obsession*.
 
-In the film, Bear breaks a One Wish Willow and wishes for Nikki to love him more than anyone. The wish comes true—but Nikki’s love becomes an uncontrollable obsession, setting off a chain of tragedy. This project brings that unsettling premise into an interactive website: make a wish, break the willow, and discover how getting exactly what you asked for can still go terribly wrong.
+In the film, Bear wishes for Nikki to love him more than anyone. His wish comes true, but Nikki’s love becomes an uncontrollable obsession. This project turns that premise into an interactive website: make one wish, break the willow, and discover how getting exactly what you asked for can still go terribly wrong.
 
-[Live demo](https://one-wish-willow-lyart.vercel.app/) · [PRD](./docs/PRD.md) · [Case study](./docs/PRODUCT_CASE_STUDY.md) · [Roadmap](./docs/ROADMAP.md)
+### Key features
 
-## Product concept
+- A five-stage ritual: unbox, wish, break, wait, and reveal.
+- DeepSeek `deepseek-v4-flash` generation based on literal fulfillment and causal consequences.
+- Chinese and English language matching.
+- Curated fallbacks when the model endpoint fails.
+- Touch, pointer, keyboard, responsive-layout, and reduced-motion support.
+- Server-side credential isolation.
+- Vercel deployment for global access and a Tencent Cloud branch for mainland China.
 
-The product was created in response to the attention surrounding *Obsession* and its standout prop, the One Wish Willow. Rather than merely reproducing the prop visually, the website lets film audiences participate in its defining rule:
+### Product validation
 
-> The willow grants the wish. It does not guarantee that the result will be desirable.
+As of the supplied usage snapshot, the MVP recorded **326 API requests and 262,855 processed tokens**. Early playtests exposed outcomes that did not consistently follow the One Wish Willow premise. I revised the prompt constraints, language rules, and examples in GitHub; more accurate outcomes were followed by visibly faster API-request growth. These figures measure model usage rather than unique users or conversion.
 
-The AI therefore does not reject, misunderstand, or simply sabotage a wish. It fulfills the stated desire, then reveals the consequence hidden inside the wording, scale, or method of fulfillment.
+## 免责声明 / Disclaimer
 
-## Experience flow
-
-1. Open the One Wish Willow box.
-2. Enter the one wish you most want granted.
-3. Hold the willow until it breaks.
-4. Wait while the willow interprets the wish.
-5. Receive a fulfilled outcome with an unforeseen cost.
-
-The interaction mirrors the film’s tension: desire comes first, commitment becomes irreversible, and the true meaning of the wish is understood only after it has been granted.
-
-## Product highlights
-
-- **Film-inspired participation:** converts audience interest in a recognizable story prop into a playable digital experience.
-- **Consequence-driven AI:** grants the wish literally while deriving the twist from the user’s own wording or assumptions.
-- **DeepSeek generation:** uses `deepseek-v4-flash` behind a serverless API route.
-- **Ritualized interaction:** unboxing, wishing, long-press breaking, waiting, and revealing create a complete dramatic arc.
-- **Multilingual output:** responds in the language of the wish, including Chinese-first handling for primarily Chinese mixed-language input.
-- **Reliable reveal:** curated fallback outcomes preserve the ending when the model service fails.
-- **Accessible controls:** supports touch, pointer, and keyboard input, reduced-motion preferences, responsive layouts, and optional sound.
-- **Regional deployment:** `main` runs on Vercel for global access; the `腾讯云` branch supports mainland China users.
-- **Protected credentials:** the model API key remains in server-side environment variables.
-
-## How the AI interprets a wish
-
-The generation policy follows four steps:
-
-1. Identify the exact outcome the user requested.
-2. Grant that outcome rather than refusing it.
-3. Find an overlooked assumption, missing boundary, or extreme interpretation.
-4. Reveal a direct consequence that makes the user realize: “That is technically what I asked for.”
-
-The twist should be relevant and understandable—not a random disaster. For example, Bear’s wish succeeds because Nikki does love him beyond everyone else; the horror comes from what “beyond everyone else” means when taken to its extreme.
-
-## Architecture
-
-```text
-Interactive single-page experience
-              |
-              v
-        POST /api/wish
-              |
-              v
-     Serverless AI request
-              |
-              v
-Wish granted + unforeseen consequence
-              |
-              +-- API failure -> curated fallback ending
-```
-
-## Deployment
-
-| Audience | Branch | Platform | Role |
-|---|---|---|---|
-| Global | `main` | Vercel | Primary production experience and serverless API |
-| Mainland China | `腾讯云` | Tencent Cloud | Region-specific deployment for domestic access |
-
-## Validation metrics
-
-As of the supplied usage snapshot, the MVP has generated **326 API requests and processed 262,855 tokens**. These are model-usage figures rather than unique-user or conversion metrics.
-
-An early playtest exposed a prompt-quality problem: some outcomes felt unrelated to the One Wish Willow rule, causing testers to stop after one attempt. The prompt was revised to enforce literal fulfillment, causal consequences, language matching, and tighter examples. More accurate outcomes were followed by visibly faster API-request growth, although a precise uplift cannot be calculated without dated pre/post data.
-
-The next validation metrics are:
-
-- Start-to-result completion rate
-- Wish submission and willow-break completion rates
-- AI success rate and fallback activation rate
-- p50/p95 time to reveal
-- Language-match and wish-relevance scores
-- Replay/share intent
-- Availability and latency by deployment region
-
-## Disclaimer
+本项目是用于学习与作品集展示的非官方粉丝创作，与影片制作方、版权所有者、发行方或官方一愿柳商品不存在隶属、授权或商业合作关系。《痴迷》、相关角色及标识的权利归各自权利人所有。
 
 This is an unofficial fan-made project created for educational and portfolio purposes. It is not affiliated with, endorsed by, or sponsored by the filmmakers, rights holders, distributors, or official One Wish Willow merchandise. *Obsession*, its characters, and related marks belong to their respective owners.
