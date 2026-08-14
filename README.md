@@ -3,7 +3,7 @@
 > 愿望一定会实现，但结果未必如你所愿。  
 > Your wish will come true. The outcome may not be what you meant.
 
-[中文](#中文介绍) · [English](#english) · [在线体验](https://one-wish-willow-lyart.vercel.app/) · [产品需求文档](./docs/PRD.md) · [产品案例](./docs/PRODUCT_CASE_STUDY.md) · [迭代路线](./docs/ROADMAP.md)
+[中文](#中文介绍) · [English](#english) · [在线体验](https://one-wish-willow-lyart.vercel.app/) · [产品需求文档](./docs/PRD.md) · [产品迭代复盘](./docs/PRODUCT_ITERATION.md) · [产品案例](./docs/PRODUCT_CASE_STUDY.md) · [迭代路线](./docs/ROADMAP.md)
 
 ## 中文介绍
 
@@ -67,7 +67,7 @@ DeepSeek deepseek-v4-flash
 
 截至统计截图，产品累计产生 **326 次 API 请求、处理 262,855 Tokens**。这组数据代表模型调用量，不等同于独立用户数或转化率。
 
-首版上线后，部分朋友试玩反馈生成结果与一愿柳设定不够贴合，体验一次后没有继续使用。我据此将问题定位到 Prompt 对“愿望必须实现”和“后果必须来自原始措辞”的约束不足，并在 GitHub 中补强生成逻辑、语言规则与示例。输出相关性改善后，观察到 API 请求增长速度明显加快；由于尚未保留完整的分日数据，暂不宣称具体增长比例。
+首版以海外部署为起点，系统 Prompt 主要使用英文。朋友试玩后发现，中文结果存在表达不自然、篇幅过长和场景不匹配等问题，部分用户体验一次后没有继续使用。我据此加入中文本地化规则，补强混合语言判断、约 100 字长度限制、愿望因果关系和娱乐型场景处理。输出相关性改善后，观察到 API 请求增长速度明显加快；由于尚未保留完整的分日数据，暂不宣称具体增长比例。详细过程见[产品迭代复盘](./docs/PRODUCT_ITERATION.md)。
 
 下一阶段重点验证：
 
